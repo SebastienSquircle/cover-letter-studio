@@ -1,1 +1,792 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cover Letter Studio — Sebastien Carre</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #0F0F0F;
+    --ink-mid: #555;
+    --ink-light: #999;
+    --rule: #E2E2E0;
+    --surface: #F8F7F4;
+    --white: #FFFFFF;
+    --accent: #1A5C38;
+    --accent-light: #EAF3EE;
+    --accent-mid: #2E7D52;
+    --danger: #C0392B;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .logo-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .logo-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  .header-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .header-links a {
+    font-size: 13px;
+    color: var(--ink-mid);
+    text-decoration: none;
+  }
+  .header-links a:hover { color: var(--ink); }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    flex: 1;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    background: var(--white);
+    border-right: 1px solid var(--rule);
+    padding: 2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.25rem;
+  }
+  .field { margin-bottom: 1.25rem; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-mid);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  .field input, .field textarea {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--accent-mid); }
+  .field textarea { min-height: 140px; }
+  .field textarea.notes { min-height: 70px; }
+  .divider { border: none; border-top: 1px solid var(--rule); margin: 1.5rem 0; }
+
+  .generate-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .generate-btn:hover { background: var(--accent-mid); }
+  .generate-btn:active { transform: scale(0.99); }
+  .generate-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+  .status-msg {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--ink-light);
+    min-height: 18px;
+    text-align: center;
+  }
+  .status-msg.error { color: var(--danger); }
+
+  /* Role type selector */
+  .role-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .role-chip {
+    font-size: 12px;
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink-mid);
+    font-family: 'Inter', sans-serif;
+    transition: all 0.12s;
+  }
+  .role-chip:hover { border-color: var(--accent-mid); color: var(--accent); }
+  .role-chip.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel {
+    padding: 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+  }
+  .right-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .right-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .right-title span { color: var(--accent); font-style: italic; }
+  .action-bar {
+    display: flex;
+    gap: 8px;
+  }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink-mid);
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .action-btn:hover { background: var(--surface); color: var(--ink); border-color: #ccc; }
+  .action-btn svg { width: 14px; height: 14px; }
+
+  /* Letter output */
+  .letter-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 3rem 3.5rem;
+    max-width: 700px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .letter-header-block {
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+  .letter-sender-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .letter-tagline {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+  .letter-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--ink-mid);
+  }
+  .letter-contacts a { color: var(--accent); text-decoration: none; }
+  .letter-date {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 1.25rem;
+  }
+  .letter-salutation {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+  #letterBody {
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+  #letterBody p {
+    margin-bottom: 1.1rem;
+  }
+  #letterBody p:last-child { margin-bottom: 0; }
+  .letter-footer {
+    margin-top: 2rem;
+    border-top: 2px solid var(--accent);
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .letter-signoff {
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.7;
+  }
+  .letter-signoff strong {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+    display: block;
+    margin-top: 4px;
+  }
+  .company-watermark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: #E8E8E5;
+    letter-spacing: -0.02em;
+    text-align: right;
+    user-select: none;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    flex: 1;
+    padding: 4rem 2rem;
+  }
+  .empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .empty-icon svg { color: var(--accent); }
+  .empty-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+  }
+  .empty-sub {
+    font-size: 13px;
+    color: var(--ink-light);
+    max-width: 280px;
+    line-height: 1.6;
+  }
+
+  /* Project instruction modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 2rem;
+    max-width: 640px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .modal-sub { font-size: 13px; color: var(--ink-mid); }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: var(--ink-mid);
+    white-space: pre-wrap;
+    font-family: 'Inter', sans-serif;
+    max-height: 340px;
+  }
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-close-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid var(--rule);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink-mid);
+    cursor: pointer;
+  }
+  .modal-copy-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    border-radius: 7px;
+    background: var(--accent);
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .spinner.visible { display: block; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .left-panel { border-right: none; border-bottom: 1px solid var(--rule); }
+    .right-panel { padding: 1.5rem; }
+    .letter-card { padding: 1.75rem; }
+    header { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-name">Sebastien Carre</span>
+    <span class="logo-label">Cover Letter Studio</span>
+  </div>
+  <div class="header-links">
+    <span class="pill"><span class="pill-dot"></span>AI-powered</span>
+    <button class="action-btn" onclick="openModal()" style="border:none;background:transparent;cursor:pointer;font-size:13px;color:var(--ink-mid);">Project instruction</button>
+    <a href="https://linkedin.com/in/carre" target="_blank">LinkedIn ↗</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- LEFT: Form -->
+  <aside class="left-panel">
+    <p class="panel-title">API key</p>
+
+    <div class="field">
+      <label>Anthropic API key <span style="font-weight:400;color:var(--ink-light)">(not stored)</span></label>
+      <input type="password" id="apiKey" placeholder="sk-ant-api03-…" autocomplete="off" />
+    </div>
+
+    <hr class="divider" />
+    <p class="panel-title">Application details</p>
+
+    <div class="field">
+      <label>Company</label>
+      <input type="text" id="company" placeholder="e.g. Datadog" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label>Role title</label>
+      <input type="text" id="role" placeholder="e.g. VP Sales EMEA" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label>Hiring manager <span style="font-weight:400;color:var(--ink-light)">(optional)</span></label>
+      <input type="text" id="manager" placeholder="e.g. Sarah Chen, or leave blank" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label>Role type <span style="font-weight:400;color:var(--ink-light)">(select one)</span></label>
+      <div class="role-types">
+        <button class="role-chip selected" data-role="gtm" onclick="selectRole(this)">GTM / BD</button>
+        <button class="role-chip" data-role="leadership" onclick="selectRole(this)">Sales Leadership</button>
+        <button class="role-chip" data-role="enablement" onclick="selectRole(this)">Sales Enablement</button>
+        <button class="role-chip" data-role="revops" onclick="selectRole(this)">RevOps</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Job description</label>
+      <textarea id="jd" placeholder="Paste the full job description here…"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Personal notes <span style="font-weight:400;color:var(--ink-light)">(optional)</span></label>
+      <textarea class="notes" id="notes" placeholder="e.g. "I met the CRO at SaaStr", "focus on PLG angle"…"></textarea>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generate()">
+      <span class="spinner" id="spinner"></span>
+      <span id="btnLabel">Generate cover letter</span>
+    </button>
+    <p class="status-msg" id="status"></p>
+  </aside>
+
+  <!-- RIGHT: Output -->
+  <main class="right-panel" id="rightPanel">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <p class="empty-title">Your letter will appear here</p>
+      <p class="empty-sub">Fill in the company, role, and job description on the left, then hit generate.</p>
+    </div>
+
+    <div id="letterOutput" style="display:none; flex-direction:column; gap:1rem;">
+      <div class="right-header">
+        <h1 class="right-title">Cover letter <span id="forCompany"></span></h1>
+        <div class="action-bar">
+          <button class="action-btn" onclick="copyLetter()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+          <button class="action-btn" onclick="generate()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Regenerate
+          </button>
+        </div>
+      </div>
+
+      <div class="letter-card" id="letterCard">
+        <div class="letter-header-block">
+          <div class="letter-sender-name">Sebastien Carre</div>
+          <div class="letter-tagline">Expertise: Leadership · Inside Sales · Demand Generation &amp; Pipeline Performance</div>
+          <div class="letter-contacts">
+            <span>+34 610 71 76 53</span>
+            <span>·</span>
+            <span>sebastien.carre@icloud.com</span>
+            <span>·</span>
+            <a href="https://linkedin.com/in/carre" target="_blank">linkedin.com/in/carre</a>
+            <span>·</span>
+            <span>Barcelona, Spain</span>
+          </div>
+        </div>
+
+        <div class="letter-date" id="letterDate"></div>
+        <div class="letter-salutation" id="letterSalutation"></div>
+        <div id="letterBody"></div>
+
+        <div class="letter-footer">
+          <div class="letter-signoff">
+            Sincerely,<strong>Sebastien Carre</strong>
+            <span style="font-size:12px;color:var(--ink-light);">Barcelona · +34 610 71 76 53</span>
+          </div>
+          <div class="company-watermark" id="companyWatermark"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Project instruction modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div>
+      <p class="modal-title">Claude Project instruction</p>
+      <p class="modal-sub">Copy this into your Claude Project's "Project instructions" field so every conversation automatically follows your cover letter rules.</p>
+    </div>
+    <div class="modal-body" id="instrText">You are Sebastien Carre's personal cover letter assistant.
+
+IDENTITY & TONE
+- VP GTM with 20+ years in SaaS: IBM, Oracle, Salesforce, Adobe, ServiceNow, Preply, Aimsun
+- Tone: confident, direct, metric-driven. Never generic. No buzzword soup.
+- Voice: first person, no em-dashes, no exclamation marks. Professional but human.
+
+FIXED ELEMENTS — never change
+- Opening: "I'm excited to apply for the [ROLE] role at [COMPANY]."
+- Three milestones (exact figures):
+  · Salesforce $3.0B to $9.0B — 2012 to 2017, Dublin (Ireland)
+  · Adobe $7.3B to $12.0B — 2017 to 2019, London (UK)
+  · ServiceNow $4.5B to $8.0B — 2020 to 2023, Singapore
+- Future Force: "I was part of the initial program Future Force at Salesforce, the first EMEA Sales Academy."
+- Closing: "I'd love to contribute to building [X] at [COMPANY], right here from Spain."
+- Sign-off: "Thank you for considering my application. Sincerely, Sebastien Carre"
+
+STRUCTURE (5 paragraphs)
+P1 — Hook: Role + company bolded. One specific company observation. 3–4 sentences max.
+P2 — Angle: Career relevance to THIS role. Must include a metric.
+P3 — Value: What he brings to THIS role. Mirror 2–3 JD keywords.
+P4 — Milestones: Fixed bullet list, preceded by "I have had the opportunity to be part of the growth journeys of notable companies such as:"
+P5 — Closing + thank you.
+
+VERIFIED METRICS ONLY
+25–35% ACV growth | $12M revenue FY24 | 40+ rep teams | $24M quota | 107% quota attainment
+
+ROLE ANGLE
+- GTM/BD → new logo acquisition, demand generation, ICP definition, ABM, PLG
+- Sales Leadership → team building, pipeline architecture, renewal playbooks, hub buildout
+- Sales Enablement → onboarding, ramp time, coaching culture, methodology embedding
+- RevOps → pipeline forecasting, GTM alignment, data-driven motions, MEDDIC
+
+OUTPUT: Plain text. No markdown. 5 paragraphs with blank lines between. Start with "Dear Hiring Team,"</div>
+    <div class="modal-footer">
+      <button class="modal-close-btn" onclick="closeModal()">Close</button>
+      <button class="modal-copy-btn" onclick="copyInstruction()">Copy instruction</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedRoleType = 'gtm';
+
+function selectRole(el) {
+  document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRoleType = el.dataset.role;
+}
+
+function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function copyInstruction() {
+  const text = document.getElementById('instrText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.modal-copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy instruction'; }, 2000);
+  });
+}
+
+function copyLetter() {
+  const body = document.getElementById('letterBody').innerText;
+  const salutation = document.getElementById('letterSalutation').innerText;
+  const full = salutation + '\n\n' + body + '\n\nSincerely,\nSebastien Carre\nBarcelona | +34 610 71 76 53';
+  navigator.clipboard.writeText(full).then(() => {
+    const btn = document.querySelector('.action-bar .action-btn');
+    btn.innerHTML = '✓ Copied';
+    setTimeout(() => { btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy'; }, 2000);
+  });
+}
+
+const SYSTEM_PROMPT = `You are Sebastien Carre's personal cover letter assistant.
+
+IDENTITY & TONE
+- VP GTM, 20+ years in SaaS: IBM, Oracle, Salesforce, Adobe, ServiceNow, Preply, Aimsun
+- Tone: confident, direct, metric-driven. Never generic. No buzzword soup.
+- Voice: first person, no em-dashes, no exclamation marks. Professional but human.
+
+FIXED ELEMENTS — never change
+- Opening sentence: "I'm excited to apply for the [ROLE] role at [COMPANY]."
+- Milestone intro: "I have had the opportunity to be part of the growth journeys of notable companies such as:"
+- Milestones (exact, as plain text lines, no markdown):
+  - Salesforce from $3.0B to $9.0B — 2012 to 2017, Dublin (Ireland)
+  - Adobe from $7.3B to $12.0B — 2017 to 2019, London (UK)
+  - ServiceNow from $4.5B to $8.0B — 2020 to 2023, Singapore
+- "I was part of the initial program Future Force at Salesforce, the first EMEA Sales Academy."
+- Closing line: "I'd love to contribute to building [specific relevant thing] at [COMPANY], right here from Spain."
+- Final: "Thank you for considering my application."
+
+STRUCTURE: exactly 5 paragraphs separated by blank lines.
+P1 — Hook: Opening sentence, then one specific observation about the company (growth, product, brand move). 3–4 sentences.
+P2 — Angle: Career arc statement with ONE metric relevant to this role.
+P3 — Value: 2 specific things he brings to THIS role. Mirror keywords from the JD. End with what excites him.
+P4 — Milestones paragraph: intro line, then the 3 bullet lines (each starting with "- "), then the Future Force line.
+P5 — Closing line + thank you sentence. No sign-off (that's added separately).
+
+VERIFIED METRICS ONLY — never invent new ones:
+25–35% ACV growth | $12M revenue FY24 (+25% YoY) | 40+ rep teams | $24M quota (100% attainment) | 107% quota attainment at Aimsun
+
+ROLE ANGLE RULES:
+- GTM/BD: emphasise new logo acquisition, demand generation, ICP definition, ABM, PLG
+- Leadership: emphasise team building, pipeline architecture, renewal playbooks, hub buildout
+- Enablement: emphasise onboarding, ramp time, coaching culture, methodology embedding
+- RevOps: emphasise pipeline forecasting, GTM alignment, MEDDIC, data-driven motions
+
+OUTPUT FORMAT: Plain text only. No markdown, no asterisks, no hashtags. Start directly with paragraph 1 (NOT with "Dear" — that's added separately). 5 paragraphs separated by a single blank line.`;
+
+async function generate() {
+  const company = document.getElementById('company').value.trim();
+  const role = document.getElementById('role').value.trim();
+  const jd = document.getElementById('jd').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+  const manager = document.getElementById('manager').value.trim();
+
+  const status = document.getElementById('status');
+  const btn = document.getElementById('generateBtn');
+  const spinner = document.getElementById('spinner');
+  const btnLabel = document.getElementById('btnLabel');
+
+  if (!company || !role || !jd) {
+    status.textContent = 'Please fill in company, role, and job description.';
+    status.className = 'status-msg error';
+    return;
+  }
+
+  btn.disabled = true;
+  spinner.classList.add('visible');
+  btnLabel.textContent = 'Generating…';
+  status.textContent = 'Drafting your letter…';
+  status.className = 'status-msg';
+
+  const userMsg = `Company: ${company}
+Role: ${role}
+Role type: ${selectedRoleType}
+${manager ? 'Hiring manager: ' + manager : ''}
+${notes ? 'Personal notes: ' + notes : ''}
+
+Job description:
+${jd}`;
+
+  try {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    if (!apiKey) {
+      status.textContent = 'Please enter your Anthropic API key at the top.';
+      status.className = 'status-msg error';
+      btn.disabled = false;
+      spinner.classList.remove('visible');
+      btnLabel.textContent = 'Generate cover letter';
+      return;
+    }
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+
+    const data = await res.json();
+    const raw = (data.content || []).map(b => b.text || '').join('').trim();
+    if (!raw) throw new Error('Empty response from API.');
+
+    const paragraphs = raw.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+
+    const letterBody = document.getElementById('letterBody');
+    letterBody.innerHTML = '';
+    paragraphs.forEach(p => {
+      const div = document.createElement('p');
+      div.textContent = p;
+      letterBody.appendChild(div);
+    });
+
+    const salutation = manager ? `Dear ${manager},` : 'Dear Hiring Team,';
+    document.getElementById('letterSalutation').textContent = salutation;
+
+    const now = new Date();
+    document.getElementById('letterDate').textContent = now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+    document.getElementById('forCompany').textContent = `— ${company}`;
+    document.getElementById('companyWatermark').textContent = company;
+
+    document.getElementById('emptyState').style.display = 'none';
+    const out = document.getElementById('letterOutput');
+    out.style.display = 'flex';
+
+    status.textContent = 'Done — review and copy.';
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message;
+    status.className = 'status-msg error';
+  }
+
+  btn.disabled = false;
+  spinner.classList.remove('visible');
+  btnLabel.textContent = 'Generate cover letter';
+}
+</script>
+</body>
+</html>
