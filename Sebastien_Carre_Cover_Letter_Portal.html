@@ -456,6 +456,14 @@
 <div class="layout">
   <!-- LEFT: Form -->
   <aside class="left-panel">
+    <p class="panel-title">API key</p>
+
+    <div class="field">
+      <label>Anthropic API key <span style="font-weight:400;color:var(--ink-light)">(not stored)</span></label>
+      <input type="password" id="apiKey" placeholder="sk-ant-api03-…" autocomplete="off" />
+    </div>
+
+    <hr class="divider" />
     <p class="panel-title">Application details</p>
 
     <div class="field">
@@ -715,9 +723,24 @@ Job description:
 ${jd}`;
 
   try {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    if (!apiKey) {
+      status.textContent = 'Please enter your Anthropic API key at the top.';
+      status.className = 'status-msg error';
+      btn.disabled = false;
+      spinner.classList.remove('visible');
+      btnLabel.textContent = 'Generate cover letter';
+      return;
+    }
+
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
